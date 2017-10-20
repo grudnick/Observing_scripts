@@ -2,6 +2,16 @@ import numpy as np
 import math as mt
 import matplotlib.pyplot as plt
 
+def dither_batch():
+    xsize = 60.0
+    ysize = 60.0
+    npts = 117
+    mindist = 25.0
+    ntol = 3
+    outfile = "dither_Jband.txt"
+    dither_make(xsize, ysize, npts, mindist, ntol, outfile)
+   
+
 def dither_make(xsize, ysize, npts, mindist, ntol, outfile):
 
     '''Written by Gregory Rudnick 16 October 2017
@@ -14,6 +24,20 @@ def dither_make(xsize, ysize, npts, mindist, ntol, outfile):
     This isn't being done in an especially clever way.  Just start at
     the first point and keep generating random following points, only
     accepting them if they satisfy the minimum distance requirement
+
+    INPUT PARAMETERS:
+
+    xsize,ysize: size of dither box in arcsec
+
+    npts: number of dither positions
+
+    mindist: The minimum distance between successive dithers in arcsec
+
+    ntol: the number of dithers in the past for which the minimum
+    distance is enforced.  Should roughly be the half of the number of
+    dithers you will use to estimate the sky.
+
+    outfile: the file with the output positions
 
     '''
 
@@ -81,7 +105,8 @@ def dither_make(xsize, ysize, npts, mindist, ntol, outfile):
     dithplot.axis([-50., 50., -50., 50.])
     dithplot.set_xlabel('x')
     dithplot.set_ylabel('y')
-    plt.savefig('test.pdf')
+    plotfile = outfile + '.pdf'
+    plt.savefig(plotfile)
     #plt.show()
     
     #need to write to output file in x,y format
