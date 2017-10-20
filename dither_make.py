@@ -6,7 +6,7 @@ def dither_batch():
     xsize = 60.0
     ysize = 60.0
     npts = 117
-    mindist = 25.0
+    mindist = 20.0
     ntol = 3
     outfile = "dither_Jband.txt"
     dither_make(xsize, ysize, npts, mindist, ntol, outfile)
@@ -95,7 +95,14 @@ def dither_make(xsize, ysize, npts, mindist, ntol, outfile):
     print("")
     print("these should be zero if the shifts move you back to the origin at the end")
     print(sumx,sumy)
-    
+
+    #write output file with dithers
+    fo = open(outfile, "w")
+    for idith, xdith in enumerate(xrel):
+        fo.write('{:5.2f}\t{:5.2f} \n'.format(xrel[idith], yrel[idith]))
+    #close file
+    fo.close()
+
             
     plt.clf()
     fig, dithplot = plt.subplots()
@@ -108,6 +115,7 @@ def dither_make(xsize, ysize, npts, mindist, ntol, outfile):
     plotfile = outfile + '.pdf'
     plt.savefig(plotfile)
     #plt.show()
+    print("hello world")
     
     #need to write to output file in x,y format
 
