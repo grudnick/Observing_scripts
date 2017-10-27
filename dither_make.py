@@ -1,18 +1,9 @@
 import numpy as np
 import math as mt
 import matplotlib.pyplot as plt
-
-def dither_batch():
-    xsize = 60.0
-    ysize = 60.0
-    npts = 117
-    mindist = 20.0
-    ntol = 3
-    outfile = "dither_Jband.txt"
-    dither_make(xsize, ysize, npts, mindist, ntol, outfile)
    
 
-def dither_make(xsize, ysize, npts, mindist, ntol, outfile):
+def dither_make(xsize, ysize, npts, mindist, ntol, nrepeat, outfile):
 
     '''Written by Gregory Rudnick 16 October 2017
 
@@ -39,14 +30,27 @@ def dither_make(xsize, ysize, npts, mindist, ntol, outfile):
 
     outfile: the file with the output positions
 
+    nrepeat: the number of exposures to sit at the current dither
+    position.  =0 means that there is a new position each time.
+
     '''
 
     #initialize arrays with initial point
     x = np.array([np.random.rand(1) * xsize - xsize/2.],dtype=float)   
     y = np.array([np.random.rand(1) * ysize - ysize/2.],dtype=float)   
+    #print("initial",x,y)
+
+    xtest = x
+    ytest = y
+    irepeat = 0
+    while irepeat < nrepeat:
+        #print("initial repeat",xtest,ytest)
+        x = np.append(x,xtest)
+        y = np.append(y,ytest)
+        irepeat += 1
 
     i = 1
-    while i<npts:
+    while i<(npts-1):
         #make random position within the box
         xtest = np.random.rand(1) * xsize - xsize/2.
         ytest = np.random.rand(1) * ysize - ysize/2.
@@ -72,13 +76,26 @@ def dither_make(xsize, ysize, npts, mindist, ntol, outfile):
         if distcheck:
             x = np.append(x,xtest)
             y = np.append(y,ytest)
+            #print("original",i,npts,xtest,ytest)
             i += 1
+
+            #enter nrepeat identical positions
+            irepeat = 0
+            while irepeat < nrepeat:
+                #make sure that we haven't filled all dither positions
+                #print("repeat",irepeat,i,npts,xtest,ytest)
+                x = np.append(x,xtest)
+                y = np.append(y,ytest)
+                irepeat += 1
+                #increment the number of exposures 
+                i += 1
+            
 
     #now go through and calculate relative shifts.  
     xrel = np.array(x[0])
     yrel = np.array(y[0])
     i = 1
-    while i < npts:
+    while i < (npts):
         xrel = np.append(xrel, x[i] - x[i - 1])
         yrel = np.append(yrel, y[i] - y[i - 1])
         i += 1
@@ -87,9 +104,9 @@ def dither_make(xsize, ysize, npts, mindist, ntol, outfile):
     xrel = np.append(xrel, -x[npts - 1])
     yrel = np.append(yrel, -y[npts - 1])
 
-    print(x,y)
-    print("")
-    print(xrel,yrel)
+    #print(x,y)
+    #print("")
+    #print(xrel,yrel)
     sumx = np.sum(xrel)
     sumy = np.sum(yrel)
     print("")
@@ -115,7 +132,7 @@ def dither_make(xsize, ysize, npts, mindist, ntol, outfile):
     plotfile = outfile + '.pdf'
     plt.savefig(plotfile)
     #plt.show()
-    print("hello world")
+    print("hello world3")
     
     #need to write to output file in x,y format
 
