@@ -3,14 +3,18 @@ import math as mt
 import matplotlib.pyplot as plt
    
 
-def dither_make(xsize, ysize, npts, mindist, ntol, nrepeat, outroot):
+def dither_make_mmirs(xsize, ysize, npts, mindist, ntol, nrepeat, outroot):
 
-    '''Written by Gregory Rudnick 16 October 2017
+    '''Written by Gregory Rudnick 31 October 2017
 
     PURPOSE:
 
     Make a set of x and y coordinates that are random but have a
-    minimum distance to a set of preceeding coordinates.
+    minimum distance to a set of preceeding coordinates.  The output
+    format is specified for the MMIRS instrument.  
+
+    Offsets are done in an absolute sense.  Not relative to previous
+    offset.
 
     This isn't being done in an especially clever way.  Just start at
     the first point and keep generating random following points, only
