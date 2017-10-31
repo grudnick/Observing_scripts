@@ -3,7 +3,7 @@ import math as mt
 import matplotlib.pyplot as plt
    
 
-def dither_make(xsize, ysize, npts, mindist, ntol, nrepeat, outfile):
+def dither_make(xsize, ysize, npts, mindist, ntol, nrepeat, outroot):
 
     '''Written by Gregory Rudnick 16 October 2017
 
@@ -11,6 +11,9 @@ def dither_make(xsize, ysize, npts, mindist, ntol, nrepeat, outfile):
 
     Make a set of x and y coordinates that are random but have a
     minimum distance to a set of preceeding coordinates.
+
+    All shifts are relative to previous shift and final shift puts
+    telescope back at starting position.
 
     This isn't being done in an especially clever way.  Just start at
     the first point and keep generating random following points, only
@@ -28,7 +31,8 @@ def dither_make(xsize, ysize, npts, mindist, ntol, nrepeat, outfile):
     distance is enforced.  Should roughly be the half of the number of
     dithers you will use to estimate the sky.
 
-    outfile: the file with the output positions
+    outroot: the rootname for the file with the output positions and
+    the plots
 
     nrepeat: the number of exposures to sit at the current dither
     position.  =0 means that there is a new position each time.
@@ -114,6 +118,7 @@ def dither_make(xsize, ysize, npts, mindist, ntol, nrepeat, outfile):
     print(sumx,sumy)
 
     #write output file with dithers
+    outfile = outroot + '.txt'
     fo = open(outfile, "w")
     for idith, xdith in enumerate(xrel):
         fo.write('{:5.2f}\t{:5.2f} \n'.format(xrel[idith], yrel[idith]))
@@ -129,10 +134,10 @@ def dither_make(xsize, ysize, npts, mindist, ntol, nrepeat, outfile):
     dithplot.axis([-50., 50., -50., 50.])
     dithplot.set_xlabel('x')
     dithplot.set_ylabel('y')
-    plotfile = outfile + '.pdf'
+    plotfile = outroot + '.pdf'
     plt.savefig(plotfile)
     #plt.show()
-    print("hello world3")
+    #print("hello world3")
     
     #need to write to output file in x,y format
 
