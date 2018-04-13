@@ -1,9 +1,10 @@
+
 import numpy as np
 import math as mt
 import matplotlib.pyplot as plt
    
 
-def dither_make_mmirs(xsize, ysize, npts, mindist, ntol, nrepeat, outroot):
+def dither_make_mmirs(xsize, ysize, npts, mindist, ntol, nrepeat, obsband, outroot):
 
     '''Written by Gregory Rudnick 31 October 2017
 
@@ -32,6 +33,8 @@ def dither_make_mmirs(xsize, ysize, npts, mindist, ntol, nrepeat, outroot):
     distance is enforced.  Should roughly be the half of the number of
     dithers you will use to estimate the sky.
 
+    obsband: the obsband that will be written to the dither file
+
     outroot: the rootname for the file with the output positions and
     the plots
 
@@ -55,7 +58,8 @@ def dither_make_mmirs(xsize, ysize, npts, mindist, ntol, nrepeat, outroot):
         irepeat += 1
 
     i = 1
-    while i<(npts-1):
+    #while i<(npts-1):
+    while i<(npts-nrepeat):
         #make random position within the box
         xtest = np.random.rand(1) * xsize - xsize/2.
         ytest = np.random.rand(1) * ysize - ysize/2.
@@ -97,32 +101,37 @@ def dither_make_mmirs(xsize, ysize, npts, mindist, ntol, nrepeat, outroot):
             
 
     #now go through and calculate relative shifts.  
-    xrel = np.array(x[0])
-    yrel = np.array(y[0])
-    i = 1
-    while i < (npts):
-        xrel = np.append(xrel, x[i] - x[i - 1])
-        yrel = np.append(yrel, y[i] - y[i - 1])
-        i += 1
+    #xrel = np.array(x[0])
+    #yrel = np.array(y[0])
+    #i = 1
+    #while i < (npts):
+    #    xrel = np.append(xrel, x[i] - x[i - 1])
+    #    yrel = np.append(yrel, y[i] - y[i - 1])
+    #    i += 1
 
     #the last cycle should put the telescope back at the original pointing
-    xrel = np.append(xrel, -x[npts - 1])
-    yrel = np.append(yrel, -y[npts - 1])
+    x = np.append(x, 0.0)
+    y = np.append(y, 0.0)
+    #xrel = np.append(xrel, 0.0)
+    #yrel = np.append(yrel, 0.0)
 
     #print(x,y)
     #print("")
     #print(xrel,yrel)
-    sumx = np.sum(xrel)
-    sumy = np.sum(yrel)
-    print("")
-    print("these should be zero if the shifts move you back to the origin at the end")
-    print(sumx,sumy)
+    #sumx = np.sum(xrel)
+    #sumy = np.sum(yrel)
+    #print("")
+    #print("these should be zero if the shifts move you back to the origin at the end")
+    #print(sumx,sumy)
 
     #write output file with dithers
     outfile = outroot + '.txt'
     fo = open(outfile, "w")
-    for idith, xdith in enumerate(xrel):
-        fo.write('{:5.2f}\t{:5.2f} \n'.format(xrel[idith], yrel[idith]))
+    fo.write('azoff	eloff	obstype	filter	disperse	aperture	readmode\n')
+    fo.write('-----	-----	-------	------	--------	--------	--------\n')
+
+    for idith, xdith in enumerate(x):
+        fo.write('{:5.2f}	{:5.2f}	object	{:1s}	open	open	/home/mmirs/Readout/Logain/ramp_4.426s_gain2.68.tab\n'.format(x[idith], y[idith], obsband))
     #close file
     fo.close()
 
